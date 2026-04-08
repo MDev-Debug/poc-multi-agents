@@ -1,5 +1,0 @@
-<Solution>
-  <Folder Name="/backend/">
-    <Project Path="backend/Chat.Api/Chat.Api.csproj" />
-  </Folder>
-</Solution>
