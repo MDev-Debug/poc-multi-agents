@@ -1,0 +1,61 @@
+using Chat.Api.Auth;
+using Chat.Api.Contracts.Auth;
+using Chat.Api.Data;
+using Chat.Api.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace Chat.Api.Controllers;
+
+[ApiController]
+[Route("api/auth")]
+public sealed class AuthController(ChatDbContext db, JwtTokenService tokenService) : ControllerBase
+{
+	[HttpPost("register")]
+	public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
+	{
+		var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+		var exists = await db.Users.AnyAsync(x => x.Email == normalizedEmail, cancellationToken);
+		if (exists)
+		{
+			return Conflict(new { message = "E-mail já cadastrado." });
+		}
+
+		var passwordHasher = new PasswordHasher<AppUser>();
+		var user = new AppUser
+		{
+			Id = Guid.NewGuid(),
+			Email = normalizedEmail,
+			CreatedAt = DateTimeOffset.UtcNow,
+		};
+		user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
+
+		db.Users.Add(user);
+		await db.SaveChangesAsync(cancellationToken);
+
+		var token = tokenService.CreateToken(user);
+		return Ok(new AuthResponse { UserId = user.Id, Email = user.Email, Token = token });
+	}
+
+	[HttpPost("login")]
+	public async Task<ActionResult<AuthResponse>> Login(LoginRequest request, CancellationToken cancellationToken)
+	{
+		var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+		var user = await db.Users.SingleOrDefaultAsync(x => x.Email == normalizedEmail, cancellationToken);
+		if (user is null)
+		{
+			return Unauthorized(new { message = "Credenciais inválidas." });
+		}
+
+		var passwordHasher = new PasswordHasher<AppUser>();
+		var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+		if (result is PasswordVerificationResult.Failed)
+		{
+			return Unauthorized(new { message = "Credenciais inválidas." });
+		}
+
+		var token = tokenService.CreateToken(user);
+		return Ok(new AuthResponse { UserId = user.Id, Email = user.Email, Token = token });
+	}
+}
