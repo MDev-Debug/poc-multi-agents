@@ -58,7 +58,7 @@ export class AuthPage {
 			.pipe(finalize(() => (this.loading = false)))
 			.subscribe({
 				next: (res) => {
-					this.auth.saveToken(res.token);
+					this.auth.saveTokens(res.token, res.refreshToken);
 					this.okMessage = this.mode === 'login' ? 'Login realizado.' : 'Cadastro realizado.';
 					this.router.navigateByUrl('/dashboard');
 				},

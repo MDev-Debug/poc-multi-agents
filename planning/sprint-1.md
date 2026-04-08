@@ -42,11 +42,11 @@
 
 ## Plano de execução
 - Tasks backend:
-  - `tasks/task-backend-1.md`
-  - `tasks/task-backend-2.md`
+  - `tasks/sprint-1/task-backend-1.md`
+  - `tasks/sprint-1/task-backend-2.md`
 - Tasks frontend:
-  - `tasks/task-frontend-1.md`
-  - `tasks/task-frontend-2.md`
+  - `tasks/sprint-1/task-frontend-1.md`
+  - `tasks/sprint-1/task-frontend-2.md`
 - Estratégia de QA:
   - Validar critérios Given/When/Then das tasks.
   - Se houver falhas, abrir bug em `bugs/bug-*-N.md` com evidências.

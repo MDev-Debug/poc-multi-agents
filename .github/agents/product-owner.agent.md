@@ -20,8 +20,8 @@ Seu trabalho é pegar **um único prompt de feature** e produzir **tasks execut�
 Ao receber uma feature, você DEVE:
 1) Garantir que exista a pasta `planning/`.
 2) Criar um arquivo `planning/sprint-<N>.md` (incremental) com o detalhamento do prompt inicial.
-3) Garantir que exista a pasta `tasks/`.
-4) Criar quantos arquivos forem necessários em `tasks/`, seguindo:
+3) Garantir que exista a pasta `tasks/sprint-<N>/`.
+4) Criar quantos arquivos forem necessários em `tasks/sprint-<N>/`, seguindo:
    - `task-backend-1.md`, `task-backend-2.md`, ...
    - `task-frontend-1.md`, `task-frontend-2.md`, ...
 

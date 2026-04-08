@@ -1,6 +1,58 @@
-<div class="container">
-	<div class="panel">
-		<h1 class="title">Dashboard</h1>
-		<p class="subtitle">Placeholder — o conteúdo será desenvolvido na Sprint 2.</p>
-	</div>
+<div class="dash">
+	<aside class="dash-sidebar" [class.closed]="!sidebarOpen">
+		<div class="sidebar-header">
+			<button class="icon-btn" type="button" (click)="toggleSidebar()" aria-label="Menu">
+				<span class="hamburger" [class.open]="sidebarOpen">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+			</button>
+			<div class="brand" *ngIf="sidebarOpen">Chat</div>
+		</div>
+
+		<nav class="sidebar-nav">
+			<button
+				class="nav-item"
+				[class.active]="active === 'home'"
+				type="button"
+				(click)="setActive('home')"
+			>
+				<span class="nav-dot"></span>
+				<span class="nav-label" *ngIf="sidebarOpen">Home</span>
+			</button>
+			<button
+				class="nav-item"
+				[class.active]="active === 'chat'"
+				type="button"
+				(click)="setActive('chat')"
+			>
+				<span class="nav-dot"></span>
+				<span class="nav-label" *ngIf="sidebarOpen">Chat</span>
+			</button>
+		</nav>
+
+		<div class="sidebar-footer">
+			<button class="nav-item danger" type="button" (click)="logout()">
+				<span class="nav-dot"></span>
+				<span class="nav-label" *ngIf="sidebarOpen">Logout</span>
+			</button>
+		</div>
+	</aside>
+
+	<main class="dash-main">
+		<header class="dash-topbar">
+			<div class="topbar-title">Dashboard</div>
+			<div class="topbar-chip">cyberpunk</div>
+		</header>
+
+		<section class="dash-content">
+			<div class="panel">
+				<h1 class="title">{{ active === 'home' ? 'Home' : 'Chat' }}</h1>
+				<p class="subtitle">
+					Placeholder — {{ active === 'home' ? 'Home' : 'Chat' }} será implementado nas próximas sprints.
+				</p>
+			</div>
+		</section>
+	</main>
 </div>

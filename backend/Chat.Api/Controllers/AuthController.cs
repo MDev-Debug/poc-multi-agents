@@ -10,7 +10,7 @@ namespace Chat.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public sealed class AuthController(ChatDbContext db, JwtTokenService tokenService) : ControllerBase
+public sealed class AuthController(ChatDbContext db, JwtTokenService tokenService, RefreshTokenService refreshTokenService) : ControllerBase
 {
 	[HttpPost("register")]
 	public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
@@ -35,7 +35,8 @@ public sealed class AuthController(ChatDbContext db, JwtTokenService tokenServic
 		await db.SaveChangesAsync(cancellationToken);
 
 		var token = tokenService.CreateToken(user);
-		return Ok(new AuthResponse { UserId = user.Id, Email = user.Email, Token = token });
+		var refreshToken = await refreshTokenService.CreateForUserAsync(user, cancellationToken);
+		return Ok(new AuthResponse { UserId = user.Id, Email = user.Email, Token = token, RefreshToken = refreshToken });
 	}
 
 	[HttpPost("login")]
@@ -56,6 +57,21 @@ public sealed class AuthController(ChatDbContext db, JwtTokenService tokenServic
 		}
 
 		var token = tokenService.CreateToken(user);
-		return Ok(new AuthResponse { UserId = user.Id, Email = user.Email, Token = token });
+		var refreshToken = await refreshTokenService.CreateForUserAsync(user, cancellationToken);
+		return Ok(new AuthResponse { UserId = user.Id, Email = user.Email, Token = token, RefreshToken = refreshToken });
+	}
+
+	[HttpPost("refresh")]
+	public async Task<ActionResult<AuthResponse>> Refresh(RefreshRequest request, CancellationToken cancellationToken)
+	{
+		var rotated = await refreshTokenService.RotateAsync(request.RefreshToken, cancellationToken);
+		if (rotated is null)
+		{
+			return Unauthorized(new { message = "Refresh token inválido." });
+		}
+
+		var (user, newRefreshToken) = rotated.Value;
+		var token = tokenService.CreateToken(user);
+		return Ok(new AuthResponse { UserId = user.Id, Email = user.Email, Token = token, RefreshToken = newRefreshToken });
 	}
 }
