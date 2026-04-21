@@ -38,6 +38,8 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddSingleton<IPresenceService, PresenceService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddSingleton<IUserConnectionTracker, UserConnectionTracker>();
 
 var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey));
@@ -54,7 +56,8 @@ builder.Services
 
                 // SignalR WebSockets can't set Authorization header; use query string.
                 var path = context.HttpContext.Request.Path;
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/presence"))
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/hubs/presence") || path.StartsWithSegments("/hubs/chat")))
                 {
                     context.Token = accessToken;
                 }
@@ -92,5 +95,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<PresenceHub>("/hubs/presence");
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();

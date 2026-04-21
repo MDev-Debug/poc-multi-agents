@@ -62,6 +62,7 @@ export class AuthComponent {
 				next: (res) => {
 					this.auth.saveTokens(res.token, res.refreshToken);
 					this.auth.saveEmail(res.email ?? email);
+					this.auth.saveUserId(res.userId);
 					this.okMessage = this.mode === 'login' ? 'Login realizado.' : 'Cadastro realizado.';
 					this.router.navigateByUrl('/dashboard');
 				},

@@ -1,0 +1,94 @@
+<div class="private-chat">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="avatar" aria-hidden="true">{{ getInitial(otherUser.email) }}</div>
+      <span class="chat-email">{{ otherUser.email }}</span>
+    </div>
+    <button
+      class="close-btn"
+      type="button"
+      aria-label="Fechar conversa"
+      (click)="closed.emit()">
+      &#x2715;
+    </button>
+  </div>
+
+  <!-- Messages Area -->
+  <div
+    class="messages-area"
+    #messagesContainer
+    role="log"
+    aria-live="polite"
+    aria-label="Mensagens">
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="state-center">
+        <div class="spinner" aria-label="Carregando mensagens"></div>
+        <p class="state-text">Carregando mensagens...</p>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (!loading() && error()) {
+      <div class="state-center">
+        <span class="state-icon" aria-hidden="true">&#9888;</span>
+        <p class="state-text error-text">Não foi possível carregar as mensagens.</p>
+        <button class="retry-btn" type="button" (click)="loadHistory()">Tentar novamente</button>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!loading() && !error() && messages().length === 0) {
+      <div class="state-center">
+        <span class="state-icon" aria-hidden="true">&#128172;</span>
+        <p class="state-text">Nenhuma mensagem ainda. Diga olá!</p>
+      </div>
+    }
+
+    <!-- Messages -->
+    @if (!loading() && !error() && messages().length > 0) {
+      <div class="messages-list">
+        @for (msg of messages(); track msg.messageId) {
+          <div class="message-wrapper" [class.own]="isOwnMessage(msg)" [class.other]="!isOwnMessage(msg)">
+            <div class="message-bubble">
+              <p class="message-content">{{ msg.content }}</p>
+              <time class="message-time">{{ formatTime(msg.sentAt) }}</time>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Input Area -->
+  <div class="input-area">
+    @if (sendError()) {
+      <p class="send-error-text">Falha ao enviar. Tente novamente.</p>
+    }
+    <form class="input-row" (ngSubmit)="sendMessage()">
+      <textarea
+        class="message-input"
+        [(ngModel)]="newMessage"
+        name="messageContent"
+        rows="1"
+        [attr.aria-label]="'Mensagem para ' + otherUser.email"
+        placeholder="Digite uma mensagem..."
+        [disabled]="sending()"
+        (keydown)="onKeydown($event)">
+      </textarea>
+      <button
+        class="send-btn"
+        type="submit"
+        aria-label="Enviar mensagem"
+        [disabled]="sending() || !newMessage.trim()">
+        @if (sending()) {
+          <span class="mini-spinner" aria-hidden="true"></span>
+        } @else {
+          <span aria-hidden="true">&#10148;</span>
+        }
+      </button>
+    </form>
+  </div>
+</div>

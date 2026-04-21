@@ -1,20 +1,22 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { AuthService } from './auth.service';
 
-export interface OnlineUser {
-  userId: string;
-  email: string;
-  lastSeenAt: string;
+export interface ChatMessage {
+  messageId: string;
+  senderId: string;
+  senderEmail: string;
+  content: string;
+  sentAt: string; // ISO 8601
 }
 
 @Injectable({ providedIn: 'root' })
-export class PresenceHubService {
+export class ChatHubService {
   private readonly auth = inject(AuthService);
   private connection: signalR.HubConnection | null = null;
 
-  readonly onlineUsers$ = new BehaviorSubject<OnlineUser[]>([]);
+  readonly messages$ = new Subject<ChatMessage>();
   readonly connected$ = new BehaviorSubject<boolean>(false);
 
   async connect(): Promise<void> {
@@ -23,22 +25,19 @@ export class PresenceHubService {
     }
 
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5000/hubs/presence', {
+      .withUrl('http://localhost:5000/hubs/chat', {
         accessTokenFactory: () => this.auth.getToken() ?? ''
       })
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Warning)
       .build();
 
-    this.connection.on('OnlineUsers', (users: OnlineUser[]) => {
-      const myId = this.auth.getUserId();
-      const filtered = (users ?? []).filter(u => u.userId !== myId);
-      this.onlineUsers$.next(filtered);
+    this.connection.on('ReceiveMessage', (message: ChatMessage) => {
+      this.messages$.next(message);
     });
 
     this.connection.onreconnected(() => {
       this.connected$.next(true);
-      this.connection?.invoke('GetOnlineUsers').catch(console.error);
     });
 
     this.connection.onclose(() => {
@@ -48,14 +47,8 @@ export class PresenceHubService {
     try {
       await this.connection.start();
       this.connected$.next(true);
-      // After connecting, request current online users
-      try {
-        await this.connection.invoke('GetOnlineUsers');
-      } catch (err) {
-        console.error('[PresenceHub] Failed to invoke GetOnlineUsers:', err);
-      }
     } catch (err) {
-      console.error('[PresenceHub] Connection failed:', err);
+      console.error('[ChatHub] Connection failed:', err);
       this.connected$.next(false);
     }
   }
@@ -65,11 +58,17 @@ export class PresenceHubService {
       try {
         await this.connection.stop();
       } catch (err) {
-        console.error('[PresenceHub] Disconnect error:', err);
+        console.error('[ChatHub] Disconnect error:', err);
       }
       this.connection = null;
       this.connected$.next(false);
-      this.onlineUsers$.next([]);
     }
+  }
+
+  async sendMessage(receiverId: string, content: string): Promise<void> {
+    if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
+      throw new Error('ChatHub not connected');
+    }
+    await this.connection.invoke('SendPrivateMessage', receiverId, content);
   }
 }

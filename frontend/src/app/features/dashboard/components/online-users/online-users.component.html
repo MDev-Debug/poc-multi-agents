@@ -4,17 +4,35 @@
     <span class="panel-count">{{ users.length }}</span>
   </div>
 
-  <div class="user-list" *ngIf="users.length > 0">
-    <div class="user-item" *ngFor="let user of users">
-      <span class="online-dot"></span>
-      <div class="user-details">
-        <span class="user-email">{{ user.email }}</span>
-        <span class="user-time">{{ getTimeAgo(user.lastSeenAt) }}</span>
-      </div>
+  @if (users.length > 0) {
+    <div class="user-list">
+      @for (user of users; track user.userId) {
+        <div
+          class="user-item"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="'Abrir conversa com ' + user.email"
+          (click)="userSelected.emit(user)"
+          (keydown.enter)="userSelected.emit(user)">
+          <span class="online-dot"></span>
+          <div class="user-details">
+            <span class="user-email">{{ user.email }}</span>
+            <span class="user-time">{{ getTimeAgo(user.lastSeenAt) }}</span>
+          </div>
+          @if ((unreadCounts.get(user.userId) ?? 0) > 0) {
+            <span
+              class="unread-badge"
+              [attr.aria-label]="((unreadCounts.get(user.userId) ?? 0) > 99 ? '99+' : (unreadCounts.get(user.userId) ?? 0)) + ' mensagem(ns) não lida(s) de ' + user.email"
+              role="status">
+              {{ (unreadCounts.get(user.userId) ?? 0) > 99 ? '99+' : (unreadCounts.get(user.userId) ?? 0) }}
+            </span>
+          }
+        </div>
+      }
     </div>
-  </div>
-
-  <div class="empty-state" *ngIf="users.length === 0">
-    <p>Nenhum usuário online</p>
-  </div>
+  } @else {
+    <div class="empty-state">
+      <p>Nenhum usuário online</p>
+    </div>
+  }
 </aside>

@@ -27,13 +27,24 @@
       @if (currentView() === 'chat') {
         <div class="chat-layout">
           <div class="chat-center">
-            <div class="chat-placeholder">
-              <div class="placeholder-icon">💬</div>
-              <h2 class="placeholder-title">Chat</h2>
-              <p class="placeholder-sub">Selecione um usuário para conversar</p>
-            </div>
+            @if (activeConversationUser() === null) {
+              <div class="chat-placeholder">
+                <div class="placeholder-icon">💬</div>
+                <h2 class="placeholder-title">Chat</h2>
+                <p class="placeholder-sub">Selecione um usuário para conversar</p>
+              </div>
+            } @else {
+              <app-private-chat
+                [otherUser]="activeConversationUser()!"
+                (closed)="closeConversation()">
+              </app-private-chat>
+            }
           </div>
-          <app-online-users [users]="(presenceHub.onlineUsers$ | async) ?? []"></app-online-users>
+          <app-online-users
+            [users]="(presenceHub.onlineUsers$ | async) ?? []"
+            [unreadCounts]="(unreadMessages.counts$ | async) ?? emptyMap"
+            (userSelected)="openConversation($event)">
+          </app-online-users>
         </div>
       }
     </div>

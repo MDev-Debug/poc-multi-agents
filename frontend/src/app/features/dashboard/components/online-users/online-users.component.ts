@@ -1,16 +1,17 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { OnlineUser } from '../../../../core/services/presence-hub.service';
 
 @Component({
   selector: 'app-online-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './online-users.component.html',
   styleUrl: './online-users.component.scss'
 })
 export class OnlineUsersComponent {
   @Input() users: OnlineUser[] = [];
+  @Input() unreadCounts: Map<string, number> = new Map();
+  @Output() userSelected = new EventEmitter<OnlineUser>();
 
   getTimeAgo(lastSeenAt: string): string {
     const now = new Date();

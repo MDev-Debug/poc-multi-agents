@@ -15,6 +15,7 @@ export class AuthService {
 	private readonly tokenKey = 'chat_token';
 	private readonly refreshTokenKey = 'chat_refresh_token';
 	private readonly emailKey = 'userEmail';
+	private readonly userIdKey = 'chat_user_id';
 
 	constructor(private readonly http: HttpClient) {}
 
@@ -50,6 +51,14 @@ export class AuthService {
 		return sessionStorage.getItem(this.emailKey);
 	}
 
+	saveUserId(userId: string): void {
+		sessionStorage.setItem(this.userIdKey, userId);
+	}
+
+	getUserId(): string | null {
+		return sessionStorage.getItem(this.userIdKey);
+	}
+
 	getToken(): string | null {
 		return sessionStorage.getItem(this.tokenKey);
 	}
@@ -58,6 +67,7 @@ export class AuthService {
 		sessionStorage.removeItem(this.tokenKey);
 		sessionStorage.removeItem(this.refreshTokenKey);
 		sessionStorage.removeItem(this.emailKey);
+		sessionStorage.removeItem(this.userIdKey);
 		localStorage.removeItem(this.tokenKey);
 		localStorage.removeItem(this.refreshTokenKey);
 	}
