@@ -2,4 +2,13 @@
   <Folder Name="/Chat.Api/">
     <Project Path="Chat.Api/Chat.Api.csproj" />
   </Folder>
+  <Folder Name="/Chat.Application/">
+    <Project Path="Chat.Application/Chat.Application.csproj" />
+  </Folder>
+  <Folder Name="/Chat.Domain/">
+    <Project Path="Chat.Domain/Chat.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Chat.Infrastructure/">
+    <Project Path="Chat.Infrastructure/Chat.Infrastructure.csproj" />
+  </Folder>
 </Solution>

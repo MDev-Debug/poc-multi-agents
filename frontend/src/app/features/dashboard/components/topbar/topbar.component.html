@@ -1,0 +1,7 @@
+<header class="topbar">
+  <span class="topbar-title">{{ viewTitle }}</span>
+  <div class="connection-indicator" [class.connected]="connected">
+    <span class="indicator-dot"></span>
+    <span class="indicator-label">{{ connected ? 'Conectado' : 'Desconectado' }}</span>
+  </div>
+</header>

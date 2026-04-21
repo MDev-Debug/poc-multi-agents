@@ -1,0 +1,129 @@
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.sidebar-user {
+  padding: 24px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #05050d;
+}
+
+.user-info {
+  overflow: hidden;
+}
+
+.user-email {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background: rgba(0, 246, 255, 0.04);
+    color: var(--text);
+  }
+
+  &.active {
+    background: rgba(0, 246, 255, 0.08);
+    border-left-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+  }
+
+  .nav-icon {
+    font-size: 1.1rem;
+    width: 22px;
+    text-align: center;
+  }
+
+  .nav-label {
+    font-weight: 500;
+  }
+}
+
+.sidebar-footer {
+  padding: 16px 8px;
+  border-top: 1px solid var(--border);
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+  border-left: 3px solid transparent;
+  opacity: 0.8;
+
+  &:hover {
+    background: rgba(255, 59, 92, 0.08);
+    opacity: 1;
+    border-left-color: var(--danger);
+  }
+
+  .nav-icon {
+    font-size: 1.1rem;
+    width: 22px;
+    text-align: center;
+  }
+
+  .nav-label {
+    font-weight: 500;
+  }
+}

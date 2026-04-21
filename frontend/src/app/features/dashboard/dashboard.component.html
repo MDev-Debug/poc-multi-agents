@@ -1,0 +1,41 @@
+<div class="dashboard">
+  <app-sidebar
+    [userEmail]="userEmail"
+    [userInitial]="userInitial"
+    [currentView]="currentView()"
+    (viewChange)="setView($event)"
+    (logoutClick)="logout()">
+  </app-sidebar>
+
+  <div class="dash-main">
+    <app-topbar
+      [viewTitle]="currentView() === 'home' ? 'Home' : 'Chat'"
+      [connected]="(presenceHub.connected$ | async) ?? false">
+    </app-topbar>
+
+    <div class="dash-content">
+      <!-- Home View -->
+      @if (currentView() === 'home') {
+        <div class="home-placeholder">
+          <div class="placeholder-icon">🏠</div>
+          <h2 class="placeholder-title">Home</h2>
+          <p class="placeholder-sub">Em breve...</p>
+        </div>
+      }
+
+      <!-- Chat View -->
+      @if (currentView() === 'chat') {
+        <div class="chat-layout">
+          <div class="chat-center">
+            <div class="chat-placeholder">
+              <div class="placeholder-icon">💬</div>
+              <h2 class="placeholder-title">Chat</h2>
+              <p class="placeholder-sub">Selecione um usuário para conversar</p>
+            </div>
+          </div>
+          <app-online-users [users]="(presenceHub.onlineUsers$ | async) ?? []"></app-online-users>
+        </div>
+      }
+    </div>
+  </div>
+</div>

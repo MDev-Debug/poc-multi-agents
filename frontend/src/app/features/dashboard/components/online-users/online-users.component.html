@@ -1,0 +1,20 @@
+<aside class="online-panel">
+  <div class="panel-header">
+    <span class="panel-title">ONLINE</span>
+    <span class="panel-count">{{ users.length }}</span>
+  </div>
+
+  <div class="user-list" *ngIf="users.length > 0">
+    <div class="user-item" *ngFor="let user of users">
+      <span class="online-dot"></span>
+      <div class="user-details">
+        <span class="user-email">{{ user.email }}</span>
+        <span class="user-time">{{ getTimeAgo(user.lastSeenAt) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="users.length === 0">
+    <p>Nenhum usuário online</p>
+  </div>
+</aside>

@@ -1,7 +1,10 @@
 using System.Text;
-using Chat.Api.Auth;
-using Chat.Api.Data;
-using Chat.Api.Presence;
+using Chat.Application.Interfaces;
+using Chat.Application.Options;
+using Chat.Application.Services;
+using Chat.Api.Hubs;
+using Chat.Infrastructure.Data;
+using Chat.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -26,13 +29,15 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<ChatDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sql => sql.MigrationsAssembly("Chat.Infrastructure"));
 });
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
-builder.Services.AddSingleton<JwtTokenService>();
-builder.Services.AddScoped<RefreshTokenService>();
-builder.Services.AddSingleton<PresenceService>();
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddSingleton<IPresenceService, PresenceService>();
 
 var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey));

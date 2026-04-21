@@ -1,0 +1,63 @@
+<!-- Full page wrapper with grid background effect -->
+<div class="auth-page">
+  <div class="auth-bg"></div>
+
+  <div class="auth-card">
+    <!-- Logo header -->
+    <div class="auth-logo">
+      <h1 class="logo-text">CHAT</h1>
+      <p class="logo-sub">Sistema Multi-Agente</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="tab-btn" [class.active]="mode === 'login'" (click)="setMode('login')">Login</button>
+      <button class="tab-btn" [class.active]="mode === 'register'" (click)="setMode('register')">Cadastro</button>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form" novalidate>
+      <div class="field-group">
+        <label class="field-label">E-mail</label>
+        <input
+          type="email"
+          formControlName="email"
+          class="field-input"
+          [class.invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+          placeholder="seu@email.com"
+          autocomplete="email"
+        />
+        <span class="field-error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+          E-mail inválido
+        </span>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Senha</label>
+        <input
+          type="password"
+          formControlName="password"
+          class="field-input"
+          [class.invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        />
+        <span class="field-error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+          Mínimo 6 caracteres
+        </span>
+      </div>
+
+      <div class="feedback-msg error" *ngIf="errorMessage">
+        <span class="feedback-icon">⚠</span> {{ errorMessage }}
+      </div>
+      <div class="feedback-msg success" *ngIf="okMessage">
+        <span class="feedback-icon">✓</span> {{ okMessage }}
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="loading || form.invalid">
+        <span class="btn-spinner" *ngIf="loading"></span>
+        <span *ngIf="!loading">{{ mode === 'login' ? 'Entrar' : 'Criar conta' }}</span>
+      </button>
+    </form>
+  </div>
+</div>

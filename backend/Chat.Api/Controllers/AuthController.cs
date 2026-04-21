@@ -1,7 +1,7 @@
-using Chat.Api.Auth;
-using Chat.Api.Contracts.Auth;
-using Chat.Api.Data;
-using Chat.Api.Models;
+using Chat.Application.DTOs.Auth;
+using Chat.Application.Interfaces;
+using Chat.Domain.Entities;
+using Chat.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +10,7 @@ namespace Chat.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public sealed class AuthController(ChatDbContext db, JwtTokenService tokenService, RefreshTokenService refreshTokenService) : ControllerBase
+public sealed class AuthController(ChatDbContext db, IJwtTokenService tokenService, IRefreshTokenService refreshTokenService) : ControllerBase
 {
 	[HttpPost("register")]
 	public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request, CancellationToken cancellationToken)
