@@ -32,15 +32,22 @@ export class AuthService {
 	}
 
 	saveTokens(token: string, refreshToken: string): void {
-		localStorage.setItem(this.tokenKey, token);
-		localStorage.setItem(this.refreshTokenKey, refreshToken);
+		// sessionStorage é por-aba (permite múltiplos usuários em abas diferentes)
+		sessionStorage.setItem(this.tokenKey, token);
+		sessionStorage.setItem(this.refreshTokenKey, refreshToken);
+
+		// Evita que tokens antigos em localStorage causem confusão.
+		localStorage.removeItem(this.tokenKey);
+		localStorage.removeItem(this.refreshTokenKey);
 	}
 
 	getToken(): string | null {
-		return localStorage.getItem(this.tokenKey);
+		return sessionStorage.getItem(this.tokenKey);
 	}
 
 	clearTokens(): void {
+		sessionStorage.removeItem(this.tokenKey);
+		sessionStorage.removeItem(this.refreshTokenKey);
 		localStorage.removeItem(this.tokenKey);
 		localStorage.removeItem(this.refreshTokenKey);
 	}

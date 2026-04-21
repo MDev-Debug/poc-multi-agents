@@ -11,26 +11,24 @@
 			<div class="brand" *ngIf="sidebarOpen">Chat</div>
 		</div>
 
-		<nav class="sidebar-nav">
-			<button
-				class="nav-item"
-				[class.active]="active === 'home'"
-				type="button"
-				(click)="setActive('home')"
-			>
-				<span class="nav-dot"></span>
-				<span class="nav-label" *ngIf="sidebarOpen">Home</span>
-			</button>
-			<button
-				class="nav-item"
-				[class.active]="active === 'chat'"
-				type="button"
-				(click)="setActive('chat')"
-			>
-				<span class="nav-dot"></span>
-				<span class="nav-label" *ngIf="sidebarOpen">Chat</span>
-			</button>
-		</nav>
+		<div class="sidebar-body">
+			<nav class="sidebar-nav">
+				<button class="nav-item active" type="button" aria-current="page">
+					<span class="nav-dot"></span>
+					<span class="nav-label" *ngIf="sidebarOpen">Home</span>
+				</button>
+
+				<div class="nav-submenu" *ngIf="sidebarOpen" aria-label="Usuários online">
+					<div class="nav-submenu-title">Usuários online</div>
+					<div class="nav-submenu-list" role="list">
+						<div class="nav-submenu-item" role="listitem" *ngFor="let user of onlineUsers">
+							<span class="user-dot" aria-hidden="true"></span>
+							<span class="user-name">{{ user }}</span>
+						</div>
+					</div>
+				</div>
+			</nav>
+		</div>
 
 		<div class="sidebar-footer">
 			<button class="nav-item danger" type="button" (click)="logout()">
@@ -47,11 +45,11 @@
 		</header>
 
 		<section class="dash-content">
-			<div class="panel">
-				<h1 class="title">{{ active === 'home' ? 'Home' : 'Chat' }}</h1>
-				<p class="subtitle">
-					Placeholder — {{ active === 'home' ? 'Home' : 'Chat' }} será implementado nas próximas sprints.
-				</p>
+			<div class="dash-content-grid">
+				<div class="panel">
+					<h1 class="title">Home</h1>
+					<p class="subtitle">Placeholder — Home será implementado nas próximas sprints.</p>
+				</div>
 			</div>
 		</section>
 	</main>

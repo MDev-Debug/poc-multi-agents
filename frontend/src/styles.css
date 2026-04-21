@@ -35,8 +35,8 @@ body {
 	background: linear-gradient(180deg, rgba(15, 16, 32, 0.95), rgba(0, 0, 0, 0.25));
 	border-right: 1px solid rgba(0, 246, 255, 0.22);
 	transition: width 180ms ease;
-	display: grid;
-	grid-template-rows: auto 1fr auto;
+	display: flex;
+	flex-direction: column;
 	gap: 10px;
 	padding: 14px;
 }
@@ -126,6 +126,44 @@ body {
 	margin-top: 6px;
 }
 
+.sidebar-body {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.nav-submenu {
+	border-top: 1px solid rgba(233, 233, 255, 0.1);
+	padding-top: 10px;
+	margin-top: 6px;
+}
+
+.nav-submenu-title {
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	margin: 0 0 10px 0;
+}
+
+.nav-submenu-list {
+	max-height: 260px;
+	overflow: auto;
+	padding-right: 4px;
+	display: grid;
+	gap: 10px;
+}
+
+.nav-submenu-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border-radius: 14px;
+	border: 1px solid rgba(233, 233, 255, 0.12);
+	background: rgba(0, 0, 0, 0.12);
+}
+
 .nav-item {
 	display: flex;
 	align-items: center;
@@ -210,6 +248,36 @@ body {
 .dash-content {
 	padding: 22px 20px;
 	overflow: auto;
+}
+
+.dash-content-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 16px;
+	align-items: start;
+}
+
+.user-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border-radius: 14px;
+	border: 1px solid rgba(233, 233, 255, 0.12);
+	background: rgba(0, 0, 0, 0.12);
+}
+
+.user-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 999px;
+	background: rgba(0, 246, 255, 0.55);
+	box-shadow: 0 0 0 2px rgba(0, 246, 255, 0.14);
+}
+
+.user-name {
+	font-weight: 600;
+	letter-spacing: 0.2px;
 }
 
 .container {
