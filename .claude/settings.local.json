@@ -4,7 +4,12 @@
       "Bash(dotnet nuget:*)",
       "Bash(dotnet add:*)",
       "Bash(dotnet build:*)",
-      "Bash(npx ng:*)"
+      "Bash(npx ng:*)",
+      "Bash(mkdir:*)",
+      "Bash(taskkill:*)",
+      "Bash(dotnet ef:*)",
+      "Bash(ng build:*)",
+      "Bash(dotnet test:*)"
     ]
   }
 }
