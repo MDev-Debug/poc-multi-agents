@@ -69,16 +69,21 @@ Prompt de feature
 - Backend: `bug-backend-1.md`, `bug-backend-2.md`, ...
 - Frontend: `bug-frontend-1.md`, `bug-frontend-2.md`, ...
 
-### Patches de segurança
-- Pasta: `patches/sprint-N/`
+### Patches de segurança (Security)
+- Pasta: `patches/security/sprint-N/`
 - Backend: `patch-backend-1.md`, `patch-backend-2.md`, ...
 - Frontend: `patch-frontend-1.md`, `patch-frontend-2.md`, ...
-- Relatório: `patches/sprint-N/security-report-N.md`
+- Relatório: `patches/security/sprint-N/security-report-N.md`
 
-### Relatórios DBA
-- Pasta: `dba/sprint-N/` (por sprint) ou `dba/analysis/` (análise global)
-- Relatório por sprint: `dba-report-1.md`, `dba-report-2.md`, ...
-- Análise global: `dba/analysis/db-analysis.md`
+### Análises e relatórios DBA
+- Análise/relatório por sprint: `patches/dba/sprint-N/dba-report-N.md`
+- Análise global (quando sem sprint): `patches/dba/sprint-N/db-analysis.md`
+
+### Scripts SQL (DBA)
+- Pasta: `db/sprint-N/scripts/`
+- Nomenclatura: `NNN_descricao_curta.sql` (ex: `001_add_index_messages_sent_at.sql`)
+- Scripts nativos SQL Server — idempotentes com `IF NOT EXISTS`
+- **Exceção**: renomear colunas mapeadas em entidades EF Core usa migration EF Core
 
 ## Stack técnica
 

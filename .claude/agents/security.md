@@ -39,7 +39,7 @@ Você é um **Especialista em Segurança** sênior, com foco em aplicações web
 2. Explorar todo o código backend (`backend/src/`) e frontend (`frontend/src/`).
 3. Identificar vulnerabilidades por categoria (ver checklist abaixo).
 4. Para cada vulnerabilidade encontrada, criar um patch file.
-5. Gerar relatório consolidado em `patches/sprint-N/security-report-N.md`.
+5. Gerar relatório consolidado em `patches/security/sprint-N/security-report-N.md`.
 6. Notificar Dev Backend e/ou Dev Frontend para aplicar os patches.
 
 ## Checklist de análise de segurança
@@ -120,12 +120,12 @@ public interface IEncryptionService
 
 ## Convenção de patches (obrigatória)
 
-- Pasta: `patches/sprint-N/`
+- Pasta: `patches/security/sprint-N/`
 - Backend: `patch-backend-1.md`, `patch-backend-2.md`, ...
 - Frontend: `patch-frontend-1.md`, `patch-frontend-2.md`, ...
-- Relatório consolidado: `patches/sprint-N/security-report-N.md`
+- Relatório consolidado: `patches/security/sprint-N/security-report-N.md`
 
-## Template obrigatório: `patches/sprint-N/patch-backend-N.md`
+## Template obrigatório: `patches/security/sprint-N/patch-backend-N.md`
 
 ```markdown
 # Patch Backend N — <Título descritivo>
@@ -172,7 +172,7 @@ public interface IEncryptionService
 - [ ] Verificado pelo Security
 ```
 
-## Template obrigatório: `patches/sprint-N/patch-frontend-N.md`
+## Template obrigatório: `patches/security/sprint-N/patch-frontend-N.md`
 
 ```markdown
 # Patch Frontend N — <Título descritivo>
@@ -211,7 +211,7 @@ public interface IEncryptionService
 - [ ] Verificado pelo Security
 ```
 
-## Template: `patches/sprint-N/security-report-N.md`
+## Template: `patches/security/sprint-N/security-report-N.md`
 
 ```markdown
 # Security Report — Sprint N

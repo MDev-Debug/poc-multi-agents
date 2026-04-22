@@ -39,8 +39,9 @@ Você é um **DBA (Database Administrator)** sênior, especialista em SQL Server
 2. Listar todas as migrations em `backend/src/**/Migrations/`.
 3. Mapear todas as tabelas, colunas, tipos, índices e constraints.
 4. Avaliar cada item contra os critérios abaixo.
-5. Gerar relatório em `dba/sprint-N/dba-report-N.md` (ou `dba/analysis/db-analysis.md` para análise global).
-6. Se refatoração for necessária e aprovada: criar nova migration de renomeação.
+5. Gerar relatório em `patches/dba/sprint-N/db-analysis.md` (análise global) ou `patches/dba/sprint-N/dba-report-N.md` (por sprint).
+6. Gerar scripts SQL nativos em `db/sprint-N/scripts/` para todas as mudanças aprovadas.
+7. **Exceção**: renomear colunas referenciadas em entidades EF Core requer migration EF Core + atualização da entidade C# — não usar `sp_rename` isolado.
 
 ## Critérios de qualidade de schema
 
@@ -67,7 +68,48 @@ Você é um **DBA (Database Administrator)** sênior, especialista em SQL Server
 - Booleanos: `bit NOT NULL DEFAULT 0`.
 - IDs: `uniqueidentifier` (GUID) ou `int IDENTITY` — ser consistente em todo o projeto.
 
-## Template: `dba/sprint-N/dba-report-N.md`
+## Convenção de scripts SQL (obrigatória)
+
+- Pasta: `db/sprint-N/scripts/`
+- Nomenclatura: `NNN_descricao_curta.sql` (número sequencial com 3 dígitos + underscore + descrição em snake_case)
+- Exemplos:
+  - `001_add_index_messages_sent_at.sql`
+  - `002_add_check_constraint_messages_content_not_empty.sql`
+  - `003_fix_password_hash_column_type.sql`
+  - `004_add_check_constraint_no_self_message.sql`
+- Cada script deve ser **idempotente**: usar `IF NOT EXISTS` para índices/constraints, `IF COL_LENGTH` para colunas.
+- Sempre incluir comentário de cabeçalho com: objetivo, sprint, data, impacto estimado.
+- **Não usar migrations EF Core** para índices, CHECK constraints ou alterações de tipo de coluna.
+- **Usar migration EF Core** apenas para renomear colunas mapeadas em entidades C# (precisa sincronizar código e snapshot).
+
+## Template de script SQL
+
+```sql
+-- ============================================================
+-- Script : NNN_descricao_curta.sql
+-- Sprint : N
+-- Data   : YYYY-MM-DD
+-- Objetivo: <descrição clara do que faz>
+-- Impacto : Nenhum / Baixo / Alto
+-- ============================================================
+
+-- Verificar se já foi aplicado antes de executar
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = 'IX_NomeDoIndice' AND object_id = OBJECT_ID('NomeTabela')
+)
+BEGIN
+    CREATE INDEX IX_NomeDoIndice ON NomeTabela (Coluna DESC);
+    PRINT 'Índice IX_NomeDoIndice criado com sucesso.';
+END
+ELSE
+BEGIN
+    PRINT 'Índice IX_NomeDoIndice já existe — script ignorado.';
+END
+GO
+```
+
+## Template: `patches/dba/sprint-N/dba-report-N.md`
 
 ```markdown
 # DBA Report — Sprint N
@@ -95,10 +137,14 @@ Você é um **DBA (Database Administrator)** sênior, especialista em SQL Server
 - Índices recomendados: ...
 - Constraints ausentes: ...
 
+## Scripts gerados em `db/sprint-N/scripts/`
+- `001_nome.sql` — descrição
+- `002_nome.sql` — descrição
+
 ## Ações executadas
 - [ ] Nenhuma refatoração necessária
-- [ ] Migration de renomeação criada: `<nome da migration>`
-- [ ] Índices adicionados
+- [ ] Scripts SQL criados em `db/sprint-N/scripts/`
+- [ ] Migration EF Core criada (apenas renomes de coluna): `<nome da migration>`
 
 ## Observações de performance
 - ...
@@ -108,11 +154,11 @@ Você é um **DBA (Database Administrator)** sênior, especialista em SQL Server
 
 ## Status
 - [ ] Análise concluída — sem ações necessárias
-- [ ] Refatoração proposta — aguardando aprovação
-- [ ] Refatoração aplicada — migration criada
+- [ ] Scripts gerados — aguardando execução pelo DBA/Dev
+- [ ] Scripts aplicados
 ```
 
-## Template: `dba/analysis/db-analysis.md` (análise global)
+## Template: `patches/dba/sprint-N/db-analysis.md` (análise global)
 
 ```markdown
 # Análise Global do Banco de Dados
