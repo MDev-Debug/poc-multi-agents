@@ -9,7 +9,11 @@
       "Bash(taskkill:*)",
       "Bash(dotnet ef:*)",
       "Bash(ng build:*)",
-      "Bash(dotnet test:*)"
+      "Bash(dotnet test:*)",
+      "Bash(sqlcmd:*)",
+      "Bash(cmd:*)",
+      "Bash(node:*)",
+      "Bash(dotnet user-secrets:*)"
     ]
   }
 }

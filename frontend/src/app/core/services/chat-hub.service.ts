@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface ChatMessage {
   messageId: string;
@@ -25,7 +26,7 @@ export class ChatHubService {
     }
 
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5000/hubs/chat', {
+      .withUrl(`${environment.apiUrl}/hubs/chat`, {
         accessTokenFactory: () => this.auth.getToken() ?? ''
       })
       .withAutomaticReconnect()

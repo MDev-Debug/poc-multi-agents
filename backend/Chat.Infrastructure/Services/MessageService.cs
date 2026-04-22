@@ -6,37 +6,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Infrastructure.Services;
 
-public sealed class MessageService(ChatDbContext db) : IMessageService
+public sealed class MessageService(ChatDbContext db, IEncryptionService encryption) : IMessageService
 {
     public async Task<MessageDto> SaveAsync(Guid senderId, Guid receiverId, string content, CancellationToken ct)
     {
         var sender = await db.Users.AsNoTracking().FirstAsync(u => u.Id == senderId, ct);
 
+        // Cifra o conteúdo antes de persistir
+        var encryptedContent = encryption.Encrypt(content);
+
         var message = new Message
         {
-            Id = Guid.NewGuid(),
-            SenderId = senderId,
+            Id         = Guid.NewGuid(),
+            SenderId   = senderId,
             ReceiverId = receiverId,
-            Content = content,
-            SentAt = DateTimeOffset.UtcNow,
+            Content    = encryptedContent,     // ← cifrado
+            SentAt     = DateTimeOffset.UtcNow,
         };
 
         db.Messages.Add(message);
         await db.SaveChangesAsync(ct);
 
+        // Retorna o conteúdo em texto plano para o cliente
         return new MessageDto
         {
-            MessageId = message.Id,
-            SenderId = message.SenderId,
+            MessageId   = message.Id,
+            SenderId    = message.SenderId,
             SenderEmail = sender.Email,
-            Content = message.Content,
-            SentAt = message.SentAt,
+            Content     = content,              // ← texto plano
+            SentAt      = message.SentAt,
         };
     }
 
-    public async Task<IReadOnlyList<MessageDto>> GetHistoryAsync(Guid userA, Guid userB, int page, int pageSize, CancellationToken ct)
+    public async Task<IReadOnlyList<MessageDto>> GetHistoryAsync(
+        Guid userA, Guid userB, int page, int pageSize, CancellationToken ct)
     {
-        var messages = await db.Messages
+        var rows = await db.Messages
             .AsNoTracking()
             .Where(m =>
                 (m.SenderId == userA && m.ReceiverId == userB) ||
@@ -47,16 +52,24 @@ public sealed class MessageService(ChatDbContext db) : IMessageService
             .Join(db.Users.AsNoTracking(),
                 m => m.SenderId,
                 u => u.Id,
-                (m, u) => new MessageDto
+                (m, u) => new
                 {
-                    MessageId = m.Id,
-                    SenderId = m.SenderId,
-                    SenderEmail = u.Email,
-                    Content = m.Content,
-                    SentAt = m.SentAt,
+                    m.Id,
+                    m.SenderId,
+                    u.Email,
+                    m.Content,        // ← ainda cifrado neste ponto
+                    m.SentAt,
                 })
             .ToListAsync(ct);
 
-        return messages;
+        // Decifra no lado da aplicação, após o fetch
+        return rows.Select(r => new MessageDto
+        {
+            MessageId   = r.Id,
+            SenderId    = r.SenderId,
+            SenderEmail = r.Email,
+            Content     = encryption.Decrypt(r.Content),  // ← decifrado
+            SentAt      = r.SentAt,
+        }).ToList();
     }
 }

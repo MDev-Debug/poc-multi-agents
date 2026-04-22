@@ -4,12 +4,14 @@ using Chat.Domain.Entities;
 using Chat.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
+[EnableRateLimiting("auth")]
 public sealed class AuthController(ChatDbContext db, IJwtTokenService tokenService, IRefreshTokenService refreshTokenService) : ControllerBase
 {
 	[HttpPost("register")]

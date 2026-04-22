@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
-type AuthResponse = {
+export type AuthResponse = {
 	userId: string;
 	email: string;
 	token: string;
@@ -11,7 +12,7 @@ type AuthResponse = {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-	private readonly baseUrl = 'http://localhost:5000';
+	private readonly baseUrl = environment.apiUrl;
 	private readonly tokenKey = 'chat_token';
 	private readonly refreshTokenKey = 'chat_refresh_token';
 	private readonly emailKey = 'userEmail';
@@ -61,6 +62,14 @@ export class AuthService {
 
 	getToken(): string | null {
 		return sessionStorage.getItem(this.tokenKey);
+	}
+
+	getRefreshToken(): string | null {
+		return sessionStorage.getItem(this.refreshTokenKey);
+	}
+
+	refresh(refreshToken: string): Observable<AuthResponse> {
+		return this.http.post<AuthResponse>(`${this.baseUrl}/api/auth/refresh`, { refreshToken });
 	}
 
 	clearTokens(): void {

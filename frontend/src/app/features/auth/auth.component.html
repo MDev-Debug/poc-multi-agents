@@ -42,8 +42,11 @@
           placeholder="••••••••"
           autocomplete="current-password"
         />
-        <span class="field-error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-          Mínimo 6 caracteres
+        <span class="field-error" *ngIf="form.get('password')?.errors?.['minlength'] && form.get('password')?.touched">
+          Mínimo 8 caracteres
+        </span>
+        <span class="field-error" *ngIf="form.get('password')?.errors?.['passwordStrength'] && form.get('password')?.touched">
+          {{ form.get('password')?.errors?.['passwordStrength'] }}
         </span>
       </div>
 

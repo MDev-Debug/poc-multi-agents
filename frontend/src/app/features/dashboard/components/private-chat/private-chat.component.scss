@@ -296,3 +296,14 @@
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+
+.char-count {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: right;
+  margin-top: 2px;
+
+  &.warn {
+    color: var(--neon-pink);
+  }
+}

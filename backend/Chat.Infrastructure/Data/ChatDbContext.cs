@@ -29,7 +29,7 @@ public sealed class ChatDbContext(DbContextOptions<ChatDbContext> options) : DbC
 		modelBuilder.Entity<Message>(entity =>
 		{
 			entity.HasKey(x => x.Id);
-			entity.Property(x => x.Content).HasMaxLength(4000);
+			entity.Property(x => x.Content);  // nvarchar(max) — payload cifrado Base64
 			entity.HasOne(x => x.Sender)
 				.WithMany()
 				.HasForeignKey(x => x.SenderId)

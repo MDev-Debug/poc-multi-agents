@@ -1,11 +1,26 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 
 type AuthMode = 'login' | 'register';
+
+// Validator customizado para complexidade mínima de senha
+function passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
+	const value: string = control.value ?? '';
+	if (value.length < 8) return null; // defer to minLength
+
+	const hasUpper  = /[A-Z]/.test(value);
+	const hasLower  = /[a-z]/.test(value);
+	const hasNumber = /[0-9]/.test(value);
+
+	if (!hasUpper || !hasLower || !hasNumber) {
+		return { passwordStrength: 'A senha deve conter letras maiúsculas, minúsculas e números.' };
+	}
+	return null;
+}
 
 @Component({
 	selector: 'app-auth',
@@ -27,8 +42,16 @@ export class AuthComponent {
 		private readonly router: Router,
 	) {
 		this.form = this.fb.nonNullable.group({
-			email: ['', [Validators.required, Validators.email]],
-			password: ['', [Validators.required, Validators.minLength(6)]],
+			email: ['', [Validators.required, Validators.email, Validators.maxLength(320)]],
+			password: [
+				'',
+				[
+					Validators.required,
+					Validators.minLength(8),       // aumentado de 6 para 8
+					Validators.maxLength(128),     // prevenir DoS no hash
+					passwordStrengthValidator,     // complexidade mínima
+				]
+			],
 		});
 	}
 

@@ -236,3 +236,77 @@ Com a aplicação dos patches, o projeto atende aos principais requisitos da LGP
 - **Art. 46** (integridade): GCM tag garante integridade dos dados cifrados
 
 Sem os patches, o projeto viola o Art. 46 pela exposição de mensagens privadas em texto plano.
+
+---
+
+## Resultado de QA
+
+- **Data**: 2026-04-21
+- **Patches testados**: 5 (patch-backend-1, patch-backend-2, patch-backend-3, patch-frontend-1, patch-frontend-2)
+- **Scripts SQL verificados**: 6 (`db/sprint-6/scripts/001` a `006`)
+- **Bugs encontrados**: 1
+- **Bugs corrigidos**: 0
+- **Bugs abertos**: 1 — `bugs/sprint-6/bug-backend-1.md`
+
+### Checklist de itens validados
+
+| Item | Criterio | Status |
+|---|---|---|
+| `dotnet build` | 0 erros, 0 avisos | OK |
+| `ng build` | 0 erros | OK |
+| `IEncryptionService` existe em `Chat.Application/Interfaces/` | Arquivo presente e correto | OK |
+| `EncryptionService` implementa AES-256-GCM | Arquivo presente, IV 12b, tag 16b, Base64 | OK |
+| `IEncryptionService` registrado no DI (`AddSingleton`) | `Program.cs` linha 51 | OK |
+| `MessageService` injeta `IEncryptionService` | Construtor primario com `IEncryptionService encryption` | OK |
+| `MessageService.SaveAsync` cifra antes de persistir | `encryption.Encrypt(content)` antes de salvar | OK |
+| `MessageService.GetHistoryAsync` decifra apos fetch | `encryption.Decrypt(r.Content)` na projecao | OK |
+| Migration `EncryptMessageContent` existe | `20260421120000_EncryptMessageContent.cs` presente | OK |
+| `ChatDbContext` sem `HasMaxLength(4000)` em `Message.Content` | `entity.Property(x => x.Content)` sem argumento | OK |
+| `appsettings.json` — `SigningKey` vazio | `"SigningKey": ""` | OK |
+| `appsettings.json` — `DefaultConnection` vazio | `"DefaultConnection": ""` | OK |
+| `appsettings.json` — `ExpirationMinutes` = 15 | `"ExpirationMinutes": 15` | OK |
+| `appsettings.Development.json` — chave de criptografia nao zerada | Chave real presente | OK |
+| `appsettings.Development.json` — segredos nao commitados em git | **Arquivo rastreado com segredos reais** | **FALHA** |
+| `Program.cs` — `AddRateLimiter` presente | Linhas 54–76 | OK |
+| `AuthController` — `[EnableRateLimiting("auth")]` | Linha 14 | OK |
+| `ChatHub` — rate limiting por conexao | `_rateLimitMap` e `IsRateLimited()` implementados | OK |
+| `Program.cs` — validacao de `SigningKey` vazia | Linhas 81–86 | OK |
+| `SendMessageRequest` — `[Required]`, `[MinLength(1)]`, `[MaxLength(4000)]` | Arquivo correto | OK |
+| `RegisterRequest` — `[MinLength(8)]`, `[MaxLength(128)]`, `[MaxLength(320)]` no email | Arquivo correto | OK |
+| `LoginRequest` — `[MaxLength(128)]`, `[MaxLength(320)]` | Arquivo correto | OK |
+| `Program.cs` — headers `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` | Linhas 131–134 | OK |
+| `Program.cs` — HSTS apenas em producao | Linhas 137–142 | OK |
+| `Program.cs` — `UseHttpsRedirection` apenas em producao | Linhas 148–151 | OK |
+| `environment.ts` existe com `apiUrl` | `frontend/src/environments/environment.ts` | OK |
+| `environment.prod.ts` existe com HTTPS `apiUrl` | `frontend/src/environments/environment.prod.ts` | OK |
+| Todos os 4 servicos usam `environment.apiUrl` | `auth.service.ts`, `message-api.service.ts`, `chat-hub.service.ts`, `presence-hub.service.ts` | OK |
+| `token-refresh.interceptor.ts` existe | `core/interceptors/token-refresh.interceptor.ts` | OK |
+| Interceptor registrado em `app.config.ts` | `withInterceptors([authInterceptor, tokenRefreshInterceptor])` | OK |
+| `AuthService.getRefreshToken()` implementado | Linha 67 | OK |
+| `AuthService.refresh()` implementado | Linha 71 | OK |
+| `authGuard` verifica expiracao JWT | Parse do payload, verificacao de `exp` | OK |
+| `SafeTextPipe` existe em `core/pipes/safe-text.pipe.ts` | Arquivo presente | OK |
+| `SafeTextPipe` importado e usado em `PrivateChatComponent` | `imports: [CommonModule, FormsModule, SafeTextPipe]` e `{{ msg.content | safeText }}` | OK |
+| `auth.component.ts` — `minLength(8)` (nao 6) | Linha 50: `Validators.minLength(8)` | OK |
+| `auth.component.ts` — `maxLength(128)` | Linha 51 | OK |
+| `auth.component.ts` — `passwordStrengthValidator` | Linhas 11–23 | OK |
+| `private-chat.component.html` — `maxlength="4000"` no textarea | Linha 76 | OK |
+| `private-chat.component.html` — contador de chars | Linha 94 | OK |
+| `dashboard.component.ts` — logout com `Promise.allSettled` | Linhas 83–86 | OK |
+| Scripts SQL — 6 arquivos em `db/sprint-6/scripts/` | 001 a 006 presentes | OK |
+| `.gitignore` — segredos locais cobertos | `**/secrets.json`, `**/.env`, `**/.env.local`, `**/appsettings.Local.json` | PARCIAL — `appsettings.Development.json` nao coberto |
+
+### Bugs abertos
+
+| Ref | Titulo | Severidade | Status |
+|---|---|---|---|
+| `bugs/sprint-6/bug-backend-1.md` | Segredos sensíveis commitados em appsettings.Development.json | Alto | Aberto |
+
+### Veredicto
+- [ ] QA OK — aprovado para commit final
+- [x] QA NOK — bugs em aberto: `bugs/sprint-6/bug-backend-1.md`
+
+**Bloqueio**: O arquivo `backend/Chat.Api/appsettings.Development.json` esta rastreado pelo git e contem
+a chave JWT de assinatura, a chave AES-256-GCM e a connection string com senha em texto claro. Isso anula
+parcialmente os objetivos dos patches patch-backend-1 e patch-backend-2.
+Todos os outros 43 criterios de segurança dos 5 patches foram satisfeitos.

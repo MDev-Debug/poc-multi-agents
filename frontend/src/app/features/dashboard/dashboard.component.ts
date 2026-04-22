@@ -78,10 +78,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   async logout(): Promise<void> {
-    await this.presenceHub.disconnect();
-    await this.chatHub.disconnect();
-    this.auth.clearTokens();
-    this.router.navigate(['/auth']);
+    try {
+      // Desconectar SignalR antes de limpar tokens
+      await Promise.allSettled([
+        this.presenceHub.disconnect(),
+        this.chatHub.disconnect(),
+      ]);
+    } finally {
+      this.auth.clearTokens();
+      this.router.navigate(['/auth']);
+    }
   }
 
   ngOnDestroy(): void {

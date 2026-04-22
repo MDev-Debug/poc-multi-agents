@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface OnlineUser {
   userId: string;
@@ -23,7 +24,7 @@ export class PresenceHubService {
     }
 
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5000/hubs/presence', {
+      .withUrl(`${environment.apiUrl}/hubs/presence`, {
         accessTokenFactory: () => this.auth.getToken() ?? ''
       })
       .withAutomaticReconnect()

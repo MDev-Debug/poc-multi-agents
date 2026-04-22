@@ -53,7 +53,7 @@
         @for (msg of messages(); track msg.messageId) {
           <div class="message-wrapper" [class.own]="isOwnMessage(msg)" [class.other]="!isOwnMessage(msg)">
             <div class="message-bubble">
-              <p class="message-content">{{ msg.content }}</p>
+              <p class="message-content">{{ msg.content | safeText }}</p>
               <time class="message-time">{{ formatTime(msg.sentAt) }}</time>
             </div>
           </div>
@@ -73,6 +73,7 @@
         [(ngModel)]="newMessage"
         name="messageContent"
         rows="1"
+        maxlength="4000"
         [attr.aria-label]="'Mensagem para ' + otherUser.email"
         placeholder="Digite uma mensagem..."
         [disabled]="sending()"
@@ -90,5 +91,8 @@
         }
       </button>
     </form>
+    <span class="char-count" [class.warn]="newMessage.length > 3800">
+      {{ newMessage.length }}/4000
+    </span>
   </div>
 </div>

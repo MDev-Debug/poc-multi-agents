@@ -14,6 +14,8 @@
 -- Severidade: Média (problema 5.5 da análise)
 -- =============================================================================
 
+SET QUOTED_IDENTIFIER ON;
+GO
 USE [CHAT];
 GO
 

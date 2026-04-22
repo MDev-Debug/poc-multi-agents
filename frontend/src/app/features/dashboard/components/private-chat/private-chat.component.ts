@@ -18,11 +18,12 @@ import { OnlineUser } from '../../../../core/services/presence-hub.service';
 import { ChatHubService, ChatMessage } from '../../../../core/services/chat-hub.service';
 import { MessageApiService } from '../../../../core/services/message-api.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { SafeTextPipe } from '../../../../core/pipes/safe-text.pipe';
 
 @Component({
   selector: 'app-private-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SafeTextPipe],
   templateUrl: './private-chat.component.html',
   styleUrl: './private-chat.component.scss'
 })
